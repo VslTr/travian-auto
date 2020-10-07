@@ -7,6 +7,7 @@ logs
 
 # Ignore the build directory
 /dist
+/env
 
 # The file containing environment variables 
 .env
@@ -16,5 +17,5 @@ logs
 .idea/
 .vscode/
 .git/
-env/
+
 *.sw*
