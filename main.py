@@ -1,39 +1,87 @@
 from selenium import webdriver
-import time
+from webdriver_manager.chrome import ChromeDriverManager
+from time import sleep
+import random
 
-def fField(b):
-    # for i in range(11):
-    i = "1"
-    t = b.get('https://tse.europe.travian.com/build.php?id='+i)
-    print(t)
-    b1 = b.find_element_by_class_name("section1")
-    print(f"!!! {b1}")
+
+def f_field(b):
+    count1 = 1
+    f = {1: 333, 2: 333, 3: 333, 4: 333, 5: 333, 6: 333, 7: 333, 8: 333, 9: 333, 10: 333,
+     11: 333, 12: 333, 13: 333, 14: 333, 15: 333, 16: 333, 17: 333, 18: 333}
+
+    for i in range(1, 19):
+        t = b.get('https://ts5.anglosphere.travian.com/build.php?id=' + str(i))
+        try:
+            b1 = b.find_element_by_xpath('//button[@class="textButtonV1 green build"]').text
+            sleep(random.randint(2, 5))
+            b.find_element_by_id('closeContentButton').click()
+            f[i]=int(b1[-1])
+            sleep(1)
+            count1 += 1
+            if count1 == 18: break
+        except:
+            print(f"no such upgrade field: {str(i)}")
+            b.find_element_by_id('closeContentButton').click()
+            sleep(random.randint(2, 5))
+            f[i]= 999
+            count1 += 1
+            if count1 == 18: break
+
+    count2 = 0 # Counter of field ready to upgrade
+    count3 = 0 # Counter field to upgrade
+
+    for j in f:
+        if f[j] < 33: count2 += 1
+
+    if count2 <= 1: count3 = 1
+
+    m = min(f.values())
+    print(f'Min: {m}')
+
+    if m < 333:
+        for key in f:
+            if f[key] == m:
+                    print(f"Field:{key} Level:{f[key]}")
+                    try:
+                        b.get('https://ts5.anglosphere.travian.com/build.php?id=' + str(key))
+                        clk = b.find_element_by_xpath('//button[@class="textButtonV1 green build"]')
+                        clk.click()
+                        count3 += 1
+                        sleep(random.randint(2, 10))
+                    except:
+                        sleep(random.randint(2, 10))
+                        count3 += 1
+                        break
+                    
+            if count3 == 2: break
+
+    print(f)
+  
 
 def main():
-    b = webdriver.Chrome('/home/vyacheslavtr/MyPython/selenium/chromedriver')
-    b.get('https://tse.europe.travian.com/login.php')
-    login = b.find_element_by_name("name").send_keys('trg')
-    time.sleep(0.5)
-    l_pass = b.find_element_by_name("password").send_keys('QWWQtrg')
-    time.sleep(0.5)
-    # print(login, l_pass)
-    tap = b.find_element_by_css_selector("button").click()
-    # b.get('https://tse.europe.travian.com/hero.php?t=3') # Преключения
-    fField(b)
-    time.sleep(10)
-    #tap = browser.find_element_by_class_name("textButtonV1 green ").click()
-    b.close
-    
 
-    
+    while True:
+        # b = webdriver.Chrome('C:\Projects\github.com\VslTr\python\selenium\chromedriver.exe')
+        b = webdriver.Chrome(ChromeDriverManager().install())
+        b.get('https://ts5.anglosphere.travian.com//login.php')
+        login = b.find_element_by_name("name").send_keys('----')
+        sleep(random.randint(2, 5))
+        l_pass = b.find_element_by_name("password").send_keys('----')
+        sleep(random.randint(2, 5))
+        tap = b.find_element_by_css_selector("button").click()
+        f_field(b)
+        time = random.randint(300, 900)
+        print(f"Pause: {time} s")
+        print(" ")
+        b.quit()
+
+        for i in range(time + 1):
+            print(time - i, end='')
+            print('\r', end='')
+            sleep(1)
+
+
 
 if __name__ == "__main__":
     main()
 
-#     <a id="button5f7a049b73ef4" class="layoutButton buttonFramed withIcon round adventure green   " href="/hero.php?t=3">
-# 					<svg viewBox="0 0 19.75 20" class="adventure"><g class="outline">
-#   <path d="M7.82 5L11 8.14 9.22 9.92 6 6.74 2.86 9.92 1.08 8.14 4.26 5 1.08 1.78 2.86 0 6 3.18 9.22 0 11 1.78zm6.83 9.92a2.56 2.56 0 1 0 2.56 2.56 2.56 2.56 0 0 0-2.56-2.6zm-3.55 2.6s-2-.26-4.21-.73A14.89 14.89 0 0 1 2.6 15.4c.55-.37 2.13-1.1 6.49-2 7.6-1.58 10.69-3.1 10.66-5.25 0-1.86-2.44-2.86-4.26-3.45a30.7 30.7 0 0 0-3.58-.9l-.42 2.32c2.85.52 5.31 1.47 5.84 2.06-.32.35-1.82 1.48-8.72 2.91-6.27 1.3-8.68 2.53-8.61 4.39C.06 17 1.8 18 5.83 19c2.46.57 4.87.88 5 .9z"></path>
-# </g><g class="icon">
-#   <path d="M7.82 5L11 8.14 9.22 9.92 6 6.74 2.86 9.92 1.08 8.14 4.26 5 1.08 1.78 2.86 0 6 3.18 9.22 0 11 1.78zm6.83 9.92a2.56 2.56 0 1 0 2.56 2.56 2.56 2.56 0 0 0-2.56-2.6zm-3.55 2.6s-2-.26-4.21-.73A14.89 14.89 0 0 1 2.6 15.4c.55-.37 2.13-1.1 6.49-2 7.6-1.58 10.69-3.1 10.66-5.25 0-1.86-2.44-2.86-4.26-3.45a30.7 30.7 0 0 0-3.58-.9l-.42 2.32c2.85.52 5.31 1.47 5.84 2.06-.32.35-1.82 1.48-8.72 2.91-6.27 1.3-8.68 2.53-8.61 4.39C.06 17 1.8 18 5.83 19c2.46.57 4.87.88 5 .9z"></path>
-# </g></svg>
-# 		</a>
